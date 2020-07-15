@@ -26,7 +26,7 @@ def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
 
 
 def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
-    csv = open(csv_fname)
+    csv = open(csv_fname, encoding='cp932')
     out = io.BytesIO()
     csv2ffpt.convert(csv, out)
 
