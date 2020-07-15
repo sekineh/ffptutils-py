@@ -1,5 +1,6 @@
 import io
 from io import StringIO
+import os
 
 import ffpt2csv
 import csv2ffpt
@@ -20,7 +21,7 @@ def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
     out = io.StringIO()
     ffpt2csv.convert(ffpt, out)
 
-    expected = open(csv_fname, 'r', newline='\r\n').read()
+    expected = open(csv_fname, 'r', newline=os.linesep).read()
     assert expected == out.getvalue()
 
 
