@@ -31,4 +31,4 @@ def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
     csv2ffpt.convert(csv, out)
 
     expected = open(ffpt_fname, 'rb').read()
-    assert expected == out.getvalue()
+    assert expected.replace(b'\r\n', b'\n') == out.getvalue()
