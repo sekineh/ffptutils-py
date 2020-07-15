@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ParameterTree version="7.2.0.201812200559">
+    <parameters escape="true">
+        <parameters xmlns:pt="http://www.fnfr.com/schemas/parameterTree">
+            <name>a.b.c</name>
+            <type>hoge1</type>
+            <some_id>ICPO1234</some_id>
+            <place>tokyo</place>
+            <conf_1>ISO</conf_1>
+            <area>1.2.3.4</area>
+            <other_id>3456</other_id>
+            <rsettings>
+                <ip_mask>
+                    <param1>172.22.240.0 255.255.255.0</param1>
+                    <param2>172.22.244.0 255.255.255.0</param2>
+                    <param3>172.22.248.0 255.255.255.0</param3>
+                    <param4>172.22.252.0 255.255.255.0</param4>
+                </ip_mask>
+                <iparams>
+                    <param1>172.22.240.0</param1>
+                    <param2>172.22.244.0</param2>
+                    <param3>172.22.248.0</param3>
+                    <param4>172.22.252.0</param4>
+                </iparams>
+            </rsettings>
+            <cdevices>
+                <ip_and_mask>
+                    <param1>172.22.240.1 255.255.255.0</param1>
+                    <param2>172.22.244.1 255.255.255.0</param2>
+                    <param3>172.22.248.1 255.255.255.0</param3>
+                    <param4>172.22.252.1 255.255.255.0</param4>
+                </ip_and_mask>
+                <ip_with_prefix>
+                    <param1>172.22.240.0/24</param1>
+                    <param2>172.22.244.0/24</param2>
+                    <param3>172.22.248.0/24</param3>
+                    <param4>172.22.252.0/24</param4>
+                </ip_with_prefix>
+                <acl>
+                    <param1>deny ntp any 172.22.240.1 255.255.255.255</param1>
+                    <param2>deny ntp any 172.22.244.1 255.255.255.255</param2>
+                    <param3>deny ntp any 172.22.248.1 255.255.255.255</param3>
+                    <param4>deny ntp any 172.22.252.1 255.255.255.255</param4>
+                    <param5>deny http any 172.22.240.0 255.255.255.0</param5>
+                    <param6>deny http any 172.22.244.0 255.255.255.0</param6>
+                    <param7>deny telnet any 172.22.240.0 255.255.255.0</param7>
+                    <param8>deny telnet any 172.22.244.0 255.255.255.0</param8>
+                </acl>
+            </cdevices>
+        </parameters>
+    </parameters>
+</ParameterTree>

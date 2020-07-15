@@ -1,0 +1,9 @@
+Name,Type,Value,Description
+param1,,some value,description
+param2,BOOLEAN,true,ê‡ñæ
+param3,BOOLEAN,false,
+param4,BOOLEAN,,
+param5,INTEGER,24,
+param6,DOUBLE,1,
+param7/param1,,hoge,
+param7/param2/param1,,fuga,

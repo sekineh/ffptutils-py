@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ParameterTree version="7.2.0.201812200559">
+    <parameters escape="true">
+        <parameters xmlns:pt="http://www.fnfr.com/schemas/parameterTree">
+            <param1 pt:description="description">some value</param1>
+            <param2 pt:datatype="BOOLEAN" pt:description="説明">true</param2>
+            <param3 pt:datatype="BOOLEAN">false</param3>
+            <param4 pt:datatype="BOOLEAN"/>
+            <param5 pt:datatype="INTEGER">24</param5>
+            <param6 pt:datatype="DOUBLE">1</param6>
+            <param7>
+                <param1>hoge</param1>
+                <param2>
+                    <param1>fuga</param1>
+                </param2>
+            </param7>
+        </parameters>
+    </parameters>
+</ParameterTree>
