@@ -21,7 +21,7 @@ def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
     out = io.StringIO()
     ffpt2csv.convert(ffpt, out)
 
-    expected = open(csv_fname, 'r', newline=os.linesep).read()
+    expected = open(csv_fname, 'r', newline=os.linesep, encoding='cp932').read()
     assert expected == out.getvalue()
 
 
