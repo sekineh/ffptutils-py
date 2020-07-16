@@ -4,6 +4,7 @@ import csv
 import io
 import sys
 from typing import Optional, BinaryIO, TextIO
+import ffptutils
 
 from lxml import etree
 
@@ -11,15 +12,6 @@ INDENT = ' ' * 4
 
 PT_DATATYPE = '{http://www.fnfr.com/schemas/parameterTree}datatype'
 PT_DESCRIPTION = '{http://www.fnfr.com/schemas/parameterTree}description'
-
-TEMPLATE = """<?xml version="1.0"?>
-<ParameterTree version="7.2.0.201812200559">
-    <parameters escape="true">
-        <parameters xmlns:pt="http://www.fnfr.com/schemas/parameterTree">
-        </parameters>
-    </parameters>
-</ParameterTree>
-"""
 
 
 def read_csv(csv_file: TextIO):
@@ -84,25 +76,30 @@ def write_param(parent_node: etree.ElementBase, param_stack: [str],
     return write_param(sub_node, param_stack[1:], value_text, datatype, description, indent + 1)
 
 
-def save_to_ffpt_file(tree: etree.ElementTree, ffpt_file: BinaryIO):
+def save(tree: etree.ElementTree, ffpt_file: BinaryIO):
     ffpt_file.write(etree.tostring(tree, pretty_print=True,
                                    xml_declaration=True, encoding='utf-8'))
 
 
-def convert(csv_file: TextIO, ffpt_file: BinaryIO):
-    tree = etree.parse(io.StringIO(TEMPLATE))
+def load_csv(csv_file: TextIO) -> etree.ElementTree:
+    tree = etree.parse(io.StringIO(ffptutils.TEMPLATE))
     base_node = tree.getroot()[0][0]
     for [name, datatype, value_text, description] in read_csv(csv_file):
         param_stack = name.split('/')
         if len(param_stack) > 0:
             write_param(base_node, param_stack,
                         value_text, datatype, description, 3)
-    save_to_ffpt_file(tree, ffpt_file)
+    return tree
+
+
+def csv2ffpt(csv_file: TextIO, ffpt_file: BinaryIO):
+    tree = load_csv(csv_file)
+    save(tree, ffpt_file)
 
 
 def main():
     with open(sys.argv[1], 'r', newline='', encoding='utf-8-sig') as csv_file, open(sys.argv[2], 'wb') as ffpt_file:
-        convert(csv_file, ffpt_file)
+        csv2ffpt(csv_file, ffpt_file)
 
 
 if __name__ == '__main__':
