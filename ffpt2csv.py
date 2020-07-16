@@ -44,7 +44,7 @@ def convert(ffpt_file: BinaryIO, csv_file: TextIO):
 
 
 def main():
-    with open(sys.argv[1], 'rb') as ffpt_file, open(sys.argv[2], 'w', newline='') as csv_file:
+    with open(sys.argv[1], 'rb') as ffpt_file, open(sys.argv[2], 'w', newline='', encoding='utf-8-sig') as csv_file:
         convert(ffpt_file, csv_file)
 
 

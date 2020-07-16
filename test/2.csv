@@ -1,6 +1,6 @@
-Name,Type,Value,Description
+ï»¿Name,Type,Value,Description
 param1,,some value,description
-param2,BOOLEAN,true,à–¾
+param2,BOOLEAN,true,èª¬æ˜
 param3,BOOLEAN,false,
 param4,BOOLEAN,,
 param5,INTEGER,24,
