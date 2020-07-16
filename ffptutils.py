@@ -3,7 +3,6 @@ import io
 from lxml import etree
 from typing import BinaryIO, TextIO, Optional
 import csv
-import ffptutils
 
 TEMPLATE = """<?xml version="1.0"?>
 <ParameterTree version="7.2.0.201812200559">
@@ -31,18 +30,21 @@ class ParameterTree:
         _validate_tree(self.tree)
 
     def save(self, ffpt_file: BinaryIO):
+        """Save parameter into file."""
         ffpt_file.write(etree.tostring(self.tree, pretty_print=True,
                                        xml_declaration=True, encoding='utf-8'))
 
     def save_csv(self, csv_file: TextIO):
+        """Save parameter into CSV file."""
         base_node = self.tree.getroot()[0][0]  # /ParameterTree/parameters/parameters
         writer = csv.writer(csv_file)
         writer.writerow(['Name', 'Type', 'Value', 'Description'])
         for node in base_node:
             param_stack = []
-            process_node(node, param_stack, writer)
+            _process_node(node, param_stack, writer)
 
-    def set_param(self, name, datatype, value_text, description):
+    def set_param(self, name: str, datatype: str, value_text: str, description: str):
+        """Set a Parameter"""
         base_node = self.tree.getroot()[0][0]
         param_stack = name.split('/')
         if len(param_stack) > 0:
@@ -51,10 +53,13 @@ class ParameterTree:
 
 
 def load(ffpt_file: BinaryIO) -> ParameterTree:
-    return ParameterTree(etree.parse(ffpt_file))
+    """Load ParameterTree from .ffpt file"""
+    pt = ParameterTree(etree.parse(ffpt_file))
+    return pt
 
 
 def load_csv(csv_file: TextIO) -> ParameterTree:
+    """Load ParameterTree from .csv file"""
     pt = ParameterTree()
     for [name, datatype, value_text, description] in _read_csv(csv_file):
         pt.set_param(name, datatype, value_text, description)
@@ -71,7 +76,7 @@ def csv2ffpt(csv_file: TextIO, ffpt_file: BinaryIO):
     pt.save(ffpt_file)
 
 
-def process_node(node: etree.ElementBase, param_stack: [str], writer):
+def _process_node(node: etree.ElementBase, param_stack: [str], writer):
     param_stack.append(node.tag)
 
     if len(node) == 0:
@@ -83,7 +88,7 @@ def process_node(node: etree.ElementBase, param_stack: [str], writer):
     else:
         # recurse into sub nodes
         for sub_node in node:
-            process_node(sub_node, param_stack, writer)
+            _process_node(sub_node, param_stack, writer)
 
     param_stack.pop()
 
@@ -151,7 +156,7 @@ def _write_param(parent_node: etree.ElementBase, param_stack: [str],
     else:
         # create empty node here
         sub_node = _create_node(parent_node, param_stack[0],
-                               '\n', None, None, indent)
+                                '\n', None, None, indent)
 
     # recursively call into the sub_node
     return _write_param(sub_node, param_stack[1:], value_text, datatype, description, indent + 1)

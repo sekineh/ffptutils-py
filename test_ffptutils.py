@@ -36,3 +36,5 @@ def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
 def test_parameter_tree():
     pt = ffptutils.ParameterTree()
     assert type(pt) == ffptutils.ParameterTree
+
+    # assert ffptutils.load("test/1.ffpt") == ffptutils.load_csv("test/1.csv")
