@@ -101,7 +101,7 @@ def convert(csv_file: TextIO, ffpt_file: BinaryIO):
 
 
 def main():
-    with open(sys.argv[1], 'r', newline='') as csv_file, open(sys.argv[2], 'wb') as ffpt_file:
+    with open(sys.argv[1], 'r', newline='', encoding='utf-8-sig') as csv_file, open(sys.argv[2], 'wb') as ffpt_file:
         convert(csv_file, ffpt_file)
 
 
