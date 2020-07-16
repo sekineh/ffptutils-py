@@ -4,7 +4,6 @@ from lxml import etree
 from typing import BinaryIO, TextIO, Optional
 import csv
 import ffptutils
-from lxml import etree
 
 TEMPLATE = """<?xml version="1.0"?>
 <ParameterTree version="7.2.0.201812200559">
@@ -17,6 +16,7 @@ TEMPLATE = """<?xml version="1.0"?>
 
 PT_DATATYPE = '{http://www.fnfr.com/schemas/parameterTree}datatype'
 PT_DESCRIPTION = '{http://www.fnfr.com/schemas/parameterTree}description'
+
 
 def process_node(node: etree.ElementBase, param_stack: [str], writer):
     param_stack.append(node.tag)

@@ -2,8 +2,7 @@ import io
 from io import StringIO
 import os
 
-import ffpt2csv
-import csv2ffpt
+import ffptutils
 
 from typing import TextIO, BinaryIO
 
@@ -19,7 +18,7 @@ def test_ffpt2csv():
 def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
     ffpt = open(ffpt_fname, 'rb')
     out = io.StringIO()
-    ffpt2csv.ffpt2csv(ffpt, out)
+    ffptutils.ffpt2csv(ffpt, out)
 
     expected = open(csv_fname, 'r', newline=os.linesep, encoding='utf-8-sig').read()
     assert expected == out.getvalue()
@@ -28,7 +27,7 @@ def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
 def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
     csv = open(csv_fname, encoding='utf-8-sig')
     out = io.BytesIO()
-    csv2ffpt.csv2ffpt(csv, out)
+    ffptutils.csv2ffpt(csv, out)
 
     expected = open(ffpt_fname, 'rb').read()
     assert expected.replace(b'\r\n', b'\n') == out.getvalue()
