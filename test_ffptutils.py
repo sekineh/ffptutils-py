@@ -31,3 +31,8 @@ def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
 
     expected = open(ffpt_fname, 'rb').read()
     assert expected.replace(b'\r\n', b'\n') == out.getvalue()
+    
+
+def test_parameter_tree():
+    pt = ffptutils.ParameterTree()
+    assert type(pt) == ffptutils.ParameterTree

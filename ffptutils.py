@@ -17,6 +17,59 @@ TEMPLATE = """<?xml version="1.0"?>
 PT_DATATYPE = '{http://www.fnfr.com/schemas/parameterTree}datatype'
 PT_DESCRIPTION = '{http://www.fnfr.com/schemas/parameterTree}description'
 
+INDENT = ' ' * 4
+
+
+class ParameterTree:
+    """Stores iTest Parameter Tree object"""
+
+    def __init__(self, tree: etree.ElementTree = None):
+        """Create the object from the given `tree`.
+        If no `tree` is specified, create from template.
+        """
+        self.tree = tree or etree.parse(io.StringIO(TEMPLATE))
+        _validate_tree(self.tree)
+
+    def save(self, ffpt_file: BinaryIO):
+        ffpt_file.write(etree.tostring(self.tree, pretty_print=True,
+                                       xml_declaration=True, encoding='utf-8'))
+
+    def save_csv(self, csv_file: TextIO):
+        base_node = self.tree.getroot()[0][0]  # /ParameterTree/parameters/parameters
+        writer = csv.writer(csv_file)
+        writer.writerow(['Name', 'Type', 'Value', 'Description'])
+        for node in base_node:
+            param_stack = []
+            process_node(node, param_stack, writer)
+
+    def set_param(self, name, datatype, value_text, description):
+        base_node = self.tree.getroot()[0][0]
+        param_stack = name.split('/')
+        if len(param_stack) > 0:
+            _write_param(base_node, param_stack,
+                         value_text, datatype, description, 3)
+
+
+def load(ffpt_file: BinaryIO) -> ParameterTree:
+    return ParameterTree(etree.parse(ffpt_file))
+
+
+def load_csv(csv_file: TextIO) -> ParameterTree:
+    pt = ParameterTree()
+    for [name, datatype, value_text, description] in _read_csv(csv_file):
+        pt.set_param(name, datatype, value_text, description)
+    return pt
+
+
+def ffpt2csv(ffpt_file: BinaryIO, csv_file: TextIO):
+    pt = load(ffpt_file)
+    pt.save_csv(csv_file)
+
+
+def csv2ffpt(csv_file: TextIO, ffpt_file: BinaryIO):
+    pt = load_csv(csv_file)
+    pt.save(ffpt_file)
+
 
 def process_node(node: etree.ElementBase, param_stack: [str], writer):
     param_stack.append(node.tag)
@@ -35,36 +88,14 @@ def process_node(node: etree.ElementBase, param_stack: [str], writer):
     param_stack.pop()
 
 
-def load(ffpt_file: BinaryIO) -> etree.ElementTree:
-    tree: etree.ElementTree = etree.parse(ffpt_file)
+def _validate_tree(tree):
     root = tree.getroot()
     assert root.tag == 'ParameterTree'
     assert root[0].tag == 'parameters'
     assert root[0][0].tag == 'parameters'
-    return tree
 
 
-def save_csv(tree: etree.ElementTree, csv_file: TextIO):
-    base_node = tree.getroot()[0][0]  # /ParameterTree/parameters/parameters
-    writer = csv.writer(csv_file)
-    writer.writerow(['Name', 'Type', 'Value', 'Description'])
-    for node in base_node:
-        param_stack = []
-        process_node(node, param_stack, writer)
-
-
-def ffpt2csv(ffpt_file: BinaryIO, csv_file: TextIO):
-    xml = load(ffpt_file)
-    save_csv(xml, csv_file)
-
-
-INDENT = ' ' * 4
-
-PT_DATATYPE = '{http://www.fnfr.com/schemas/parameterTree}datatype'
-PT_DESCRIPTION = '{http://www.fnfr.com/schemas/parameterTree}description'
-
-
-def read_csv(csv_file: TextIO):
+def _read_csv(csv_file: TextIO):
     reader = csv.reader(csv_file)
     return [r for r in reader][1:]  # drop header row
 
@@ -85,9 +116,9 @@ def _indent_post(parent_node: etree.ElementBase, indent: int):
     parent_node[-1].tail = '\n' + INDENT * (indent - 1)
 
 
-def create_node(parent_node: etree.ElementBase, tag: str,
-                value_text: str, datatype: Optional[str], description: Optional[str],
-                indent: int) -> etree.ElementBase:
+def _create_node(parent_node: etree.ElementBase, tag: str,
+                 value_text: str, datatype: Optional[str], description: Optional[str],
+                 indent: int) -> etree.ElementBase:
     assert indent > 1
 
     _indent_pre(parent_node, indent)
@@ -103,14 +134,14 @@ def create_node(parent_node: etree.ElementBase, tag: str,
     return node
 
 
-def write_param(parent_node: etree.ElementBase, param_stack: [str],
-                value_text: str, datatype: Optional[str], description: Optional[str], indent: int) -> bool:
+def _write_param(parent_node: etree.ElementBase, param_stack: [str],
+                 value_text: str, datatype: Optional[str], description: Optional[str], indent: int) -> bool:
     assert indent > 1
     assert len(param_stack) > 0
     if len(param_stack) == 1:
         # create the node here
-        create_node(parent_node, param_stack[0],
-                    value_text, datatype, description, indent)
+        _create_node(parent_node, param_stack[0],
+                     value_text, datatype, description, indent)
         return True
 
     nodes = [n for n in parent_node if n.tag == param_stack[0]]
@@ -119,29 +150,8 @@ def write_param(parent_node: etree.ElementBase, param_stack: [str],
         sub_node = nodes[0]
     else:
         # create empty node here
-        sub_node = create_node(parent_node, param_stack[0],
+        sub_node = _create_node(parent_node, param_stack[0],
                                '\n', None, None, indent)
 
     # recursively call into the sub_node
-    return write_param(sub_node, param_stack[1:], value_text, datatype, description, indent + 1)
-
-
-def save(tree: etree.ElementTree, ffpt_file: BinaryIO):
-    ffpt_file.write(etree.tostring(tree, pretty_print=True,
-                                   xml_declaration=True, encoding='utf-8'))
-
-
-def load_csv(csv_file: TextIO) -> etree.ElementTree:
-    tree = etree.parse(io.StringIO(ffptutils.TEMPLATE))
-    base_node = tree.getroot()[0][0]
-    for [name, datatype, value_text, description] in read_csv(csv_file):
-        param_stack = name.split('/')
-        if len(param_stack) > 0:
-            write_param(base_node, param_stack,
-                        value_text, datatype, description, 3)
-    return tree
-
-
-def csv2ffpt(csv_file: TextIO, ffpt_file: BinaryIO):
-    tree = load_csv(csv_file)
-    save(tree, ffpt_file)
+    return _write_param(sub_node, param_stack[1:], value_text, datatype, description, indent + 1)
