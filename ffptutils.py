@@ -1,6 +1,5 @@
 import io
 import os
-
 from lxml import etree
 from typing import BinaryIO, TextIO, Optional, Union
 import csv
@@ -45,7 +44,8 @@ class ParameterTree:
             with open(csv_file, 'w', newline='', encoding='utf-8-sig') as f:
                 self.save_csv(f)
                 return
-        base_node = self.tree.getroot()[0][0]  # /ParameterTree/parameters/parameters
+        # /ParameterTree/parameters/parameters
+        base_node = self.tree.getroot()[0][0]
         writer = csv.writer(csv_file)
         writer.writerow(['Name', 'Type', 'Value', 'Description'])
         for node in base_node:
@@ -65,12 +65,27 @@ class ParameterTree:
         base_node = self.tree.getroot()[0][0]
         node = base_node.find(name)
         if len(node) > 0:
-            # have child nodes, 
+            # have child nodes,
             return None
         else:
             return (node.attrib.get(PT_DATATYPE) or '',
                     node.text or '',
                     node.attrib.get(PT_DESCRIPTION) or '')
+
+    def __getitem__(self, key):
+        param = self.get_param_raw(key)
+        if param:
+            datatype, text, _ = param
+            if datatype == "DOUBLE":
+                return float(text)
+            elif datatype == "INTEGER":
+                return int(text)
+            elif datatype == "BOOLEAN":
+                return text.lower() != 'false'
+            else:
+                return text
+        else:
+            raise KeyError
 
 
 def load(ffpt_file: Union[BinaryIO, str]) -> ParameterTree:

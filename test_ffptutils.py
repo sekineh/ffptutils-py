@@ -1,10 +1,7 @@
 import io
-from io import StringIO
 import os
-
+import pytest
 import ffptutils
-
-from typing import TextIO, BinaryIO
 
 TMPOUTPATH = 'test/tmpoutpath'
 
@@ -45,7 +42,7 @@ def read_utf8bom_file(file_path: str):
 
 
 def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
-    ## Use file object
+    # Use file object
 
     csv = open(csv_fname, encoding='utf-8-sig')
     out = io.BytesIO()
@@ -54,7 +51,7 @@ def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
     expected = read_binary_file(ffpt_fname)
     assert expected.replace(b'\r\n', b'\n') == out.getvalue()
 
-    ## Use path
+    # Use path
 
     ffptutils.csv2ffpt(csv_fname, TMPOUTPATH)
 
@@ -91,20 +88,53 @@ def test_parameter_tree_load_csv():
 
 def test_parameter_tree_set_param():
     pt = ffptutils.ParameterTree()
+
+    # Text
+
     pt.set_param_raw('a', '', 'A', 'desc1')
     assert pt.get_param_raw('a') == ('', 'A', 'desc1')
+    assert pt['a'] == 'A'
 
-    pt.set_param_raw('b', '', 'B', 'desc2')
-    assert pt.get_param_raw('b') == ('', 'B', 'desc2')
+    # DOUBLE
 
-    # overwrite
+    pt.set_param_raw('b', 'DOUBLE', '2.0', 'desc2')
+    assert pt.get_param_raw('b') == ('DOUBLE', '2.0', 'desc2')
+    assert pt['b'] == 2.0
+
+    # INTEGER
+
+    pt.set_param_raw('c', 'INTEGER', '42', '')
+    assert pt.get_param_raw('c') == ('INTEGER', '42', '')
+    assert pt['c'] == 42
+
+    # BOOLEAN
+
+    pt.set_param_raw('d', 'BOOLEAN', 'true', '')
+    assert pt.get_param_raw('d') == ('BOOLEAN', 'true', '')
+    assert pt['d'] is True
+
+    pt.set_param_raw('e', 'BOOLEAN', 'false', '')
+    assert pt.get_param_raw('e') == ('BOOLEAN', 'false', '')
+    assert pt['e'] is False
+
+    # Overwrite 'a'
+
     pt.set_param_raw('a', '', 'AA', 'desc3')
     assert pt.get_param_raw('a') == ('', 'AA', 'desc3')
+    assert pt['a'] == 'AA'
 
-    # reuse existing node
+    # Reuse existing node
+
     pt.set_param_raw('a/b/c', '', 'ABC', 'desc4')
     assert pt.get_param_raw('a/b/c') == ('', 'ABC', 'desc4')
-    assert pt.get_param_raw('a') == None
+    assert pt['a/b/c'] == 'ABC'
+
+    assert pt.get_param_raw('a') is None
+    with pytest.raises(KeyError):
+        _ = pt['a']
+    assert pt.get_param_raw('a/b') is None
+    with pytest.raises(KeyError):
+        _ = pt['a/b']
 
     out = io.BytesIO()
     pt.save("tmp.xml")
