@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ParameterTree version="7.2.0.201812200559">
+    <parameters escape="true">
+        <parameters xmlns:pt="http://www.fnfr.com/schemas/parameterTree">
+            <b pt:datatype="DOUBLE" pt:description="desc2">2.0</b>
+            <c pt:datatype="INTEGER">42</c>
+            <d pt:datatype="BOOLEAN">true</d>
+            <e pt:datatype="BOOLEAN">false</e>
+            <a>
+                <b>
+                    <c pt:description="desc4">ABC</c>
+                </b>
+            </a>
+        </parameters>
+    </parameters>
+</ParameterTree>

@@ -137,5 +137,6 @@ def test_parameter_tree_set_param():
         _ = pt['a/b']
 
     out = io.BytesIO()
-    pt.save("tmp.xml")
-    print(str(out.getvalue()))
+    pt.save(TMPOUTPATH)
+    assert read_binary_file("test/3.ffpt") == read_binary_file(TMPOUTPATH)
+    os.remove(TMPOUTPATH)
