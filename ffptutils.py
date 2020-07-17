@@ -52,13 +52,25 @@ class ParameterTree:
             param_stack = []
             _process_node(node, param_stack, writer)
 
-    def set_param(self, name: str, datatype: str, value_text: str, description: str):
-        """Set a Parameter"""
+    def set_param_raw(self, name: str, datatype: str, value_text: str, description: str):
+        """Set a Parameter in raw format"""
         base_node = self.tree.getroot()[0][0]
         param_stack = name.split('/')
         if len(param_stack) > 0:
             _write_param(base_node, param_stack,
                          value_text, datatype, description, 3)
+
+    def get_param_raw(self, name: str):
+        """Get a Parameter in raw format"""
+        base_node = self.tree.getroot()[0][0]
+        node = base_node.find(name)
+        if len(node) > 0:
+            # have child nodes, 
+            return None
+        else:
+            return (node.attrib.get(PT_DATATYPE) or '',
+                    node.text or '',
+                    node.attrib.get(PT_DESCRIPTION) or '')
 
 
 def load(ffpt_file: Union[BinaryIO, str]) -> ParameterTree:
@@ -77,7 +89,7 @@ def load_csv(csv_file: Union[TextIO, str]) -> ParameterTree:
             return load_csv(f)
     pt = ParameterTree()
     for [name, datatype, value_text, description] in _read_csv(csv_file):
-        pt.set_param(name, datatype, value_text, description)
+        pt.set_param_raw(name, datatype, value_text, description)
     return pt
 
 
@@ -158,16 +170,25 @@ def _write_param(parent_node: etree.ElementBase, param_stack: [str],
                  value_text: str, datatype: Optional[str], description: Optional[str], indent: int) -> bool:
     assert indent > 1
     assert len(param_stack) > 0
+
+    nodes = [n for n in parent_node if n.tag == param_stack[0]]
+
     if len(param_stack) == 1:
-        # create the node here
+        if len(nodes) > 0:
+            # remove existing one first, if exist
+            n = nodes[0]
+            n.getparent().remove(n)
+        # create the new value node here
         _create_node(parent_node, param_stack[0],
                      value_text, datatype, description, indent)
         return True
 
-    nodes = [n for n in parent_node if n.tag == param_stack[0]]
     if len(nodes) > 0:
-        # node already exists; reuse it
-        sub_node = nodes[0]
+        # node already exists; let's reuse it
+        sub_node: etree.SubElement = nodes[0]
+        # remove attributes, if exist
+        _remove_attrib(sub_node, PT_DATATYPE)
+        _remove_attrib(sub_node, PT_DESCRIPTION)
     else:
         # create empty node here
         sub_node = _create_node(parent_node, param_stack[0],
@@ -175,3 +196,10 @@ def _write_param(parent_node: etree.ElementBase, param_stack: [str],
 
     # recursively call into the sub_node
     return _write_param(sub_node, param_stack[1:], value_text, datatype, description, indent + 1)
+
+
+def _remove_attrib(node, attname):
+    try:
+        del node.attrib[attname]
+    except KeyError:
+        pass

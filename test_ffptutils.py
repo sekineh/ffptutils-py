@@ -76,8 +76,36 @@ def test_parameter_tree():
     pt = ffptutils.ParameterTree()
     assert type(pt) == ffptutils.ParameterTree
 
+
+def test_parameter_tree_load():
     pt = ffptutils.load("test/1.ffpt")
     assert type(pt) == ffptutils.ParameterTree
+    # TODO: check contents
 
+
+def test_parameter_tree_load_csv():
     pt = ffptutils.load_csv("test/1.csv")
     assert type(pt) == ffptutils.ParameterTree
+    # TODO: check contents
+
+
+def test_parameter_tree_set_param():
+    pt = ffptutils.ParameterTree()
+    pt.set_param_raw('a', '', 'A', 'desc1')
+    assert pt.get_param_raw('a') == ('', 'A', 'desc1')
+
+    pt.set_param_raw('b', '', 'B', 'desc2')
+    assert pt.get_param_raw('b') == ('', 'B', 'desc2')
+
+    # overwrite
+    pt.set_param_raw('a', '', 'AA', 'desc3')
+    assert pt.get_param_raw('a') == ('', 'AA', 'desc3')
+
+    # reuse existing node
+    pt.set_param_raw('a/b/c', '', 'ABC', 'desc4')
+    assert pt.get_param_raw('a/b/c') == ('', 'ABC', 'desc4')
+    assert pt.get_param_raw('a') == None
+
+    out = io.BytesIO()
+    pt.save("tmp.xml")
+    print(str(out.getvalue()))
