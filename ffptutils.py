@@ -30,13 +30,21 @@ class ParameterTree:
         self.tree = tree or etree.parse(io.StringIO(TEMPLATE))
         _validate_tree(self.tree)
 
-    def save(self, ffpt_file: BinaryIO):
-        """Save parameter into file."""
+    def save(self, ffpt_file: Union[BinaryIO, str]):
+        """Save parameter into file object or file path."""
+        if type(ffpt_file) == str:
+            with open(ffpt_file, 'wb') as f:
+                self.save(f)
+                return
         ffpt_file.write(etree.tostring(self.tree, pretty_print=True,
                                        xml_declaration=True, encoding='utf-8'))
 
-    def save_csv(self, csv_file: TextIO):
-        """Save parameter into CSV file."""
+    def save_csv(self, csv_file: Union[TextIO, str]):
+        """Save parameter into CSV file object or CSV file path."""
+        if type(csv_file) == str:
+            with open(csv_file, 'w', newline='', encoding='utf-8-sig') as f:
+                self.save_csv(f)
+                return
         base_node = self.tree.getroot()[0][0]  # /ParameterTree/parameters/parameters
         writer = csv.writer(csv_file)
         writer.writerow(['Name', 'Type', 'Value', 'Description'])
@@ -56,29 +64,29 @@ class ParameterTree:
 def load(ffpt_file: Union[BinaryIO, str]) -> ParameterTree:
     """Load ParameterTree from .ffpt file or path"""
     if type(ffpt_file) == str:
-        ffpt_file = open(ffpt_file, 'rb')
+        with open(ffpt_file, 'rb') as f:
+            return load(f)
     pt = ParameterTree(etree.parse(ffpt_file))
-    ffpt_file.close()
     return pt
 
 
 def load_csv(csv_file: Union[TextIO, str]) -> ParameterTree:
     """Load ParameterTree from .csv file or path"""
     if type(csv_file) == str:
-        csv_file = open(csv_file, 'r', newline=os.linesep, encoding='utf-8-sig')
+        with open(csv_file, 'r', newline=os.linesep, encoding='utf-8-sig') as f:
+            return load_csv(f)
     pt = ParameterTree()
     for [name, datatype, value_text, description] in _read_csv(csv_file):
         pt.set_param(name, datatype, value_text, description)
-    csv_file.close()
     return pt
 
 
-def ffpt2csv(ffpt_file: Union[BinaryIO, str], csv_file: TextIO):
+def ffpt2csv(ffpt_file: Union[BinaryIO, str], csv_file: Union[TextIO, str]):
     pt = load(ffpt_file)
     pt.save_csv(csv_file)
 
 
-def csv2ffpt(csv_file: Union[TextIO, str], ffpt_file: BinaryIO):
+def csv2ffpt(csv_file: Union[TextIO, str], ffpt_file: Union[BinaryIO, str]):
     pt = load_csv(csv_file)
     pt.save(ffpt_file)
 

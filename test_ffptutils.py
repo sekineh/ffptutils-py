@@ -6,6 +6,8 @@ import ffptutils
 
 from typing import TextIO, BinaryIO
 
+TMPOUTPATH = 'test/tmpoutpath'
+
 
 def test_ffpt2csv():
     assert_ffpt2csv("test/1.ffpt", "test/1.csv")
@@ -22,36 +24,53 @@ def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
     out = io.StringIO()
     ffptutils.ffpt2csv(ffpt, out)
 
-    expected = open(csv_fname, 'r', newline=os.linesep, encoding='utf-8-sig').read()
-    assert expected == out.getvalue()
+    expected = read_utf8bom_file(csv_fname)
+    assert expected == out.getvalue().replace('\r\n', '\n')
 
     # Use path
 
-    out = io.StringIO()
-    ffptutils.ffpt2csv(ffpt_fname, out)
+    ffptutils.ffpt2csv(ffpt_fname, TMPOUTPATH)
 
-    expected = open(csv_fname, 'r', newline=os.linesep, encoding='utf-8-sig').read()
-    assert expected == out.getvalue()
+    expected = read_utf8bom_file(csv_fname)
+    tmpout = read_utf8bom_file(TMPOUTPATH)
+    assert expected == tmpout
+
+    os.remove(TMPOUTPATH)
+
+
+def read_utf8bom_file(file_path: str):
+    with open(file_path, 'r', encoding='utf-8-sig') as f:
+        expected = f.read()
+    return expected
 
 
 def assert_csv2ffpt(csv_fname: str, ffpt_fname: str):
-    # Use file object
+    ## Use file object
 
     csv = open(csv_fname, encoding='utf-8-sig')
     out = io.BytesIO()
     ffptutils.csv2ffpt(csv, out)
 
-    expected = open(ffpt_fname, 'rb').read()
+    expected = read_binary_file(ffpt_fname)
     assert expected.replace(b'\r\n', b'\n') == out.getvalue()
 
-    # Use path
+    ## Use path
 
-    out = io.BytesIO()
-    ffptutils.csv2ffpt(csv_fname, out)
+    ffptutils.csv2ffpt(csv_fname, TMPOUTPATH)
 
-    expected = open(ffpt_fname, 'rb').read()
-    assert expected.replace(b'\r\n', b'\n') == out.getvalue()
-    
+    expected = read_binary_file(ffpt_fname)
+    tmpout = read_binary_file(TMPOUTPATH)
+    assert expected.replace(b'\r\n', b'\n') == tmpout
+    # assert expected == tmpout
+
+    os.remove(TMPOUTPATH)
+
+
+def read_binary_file(file_path: str):
+    with open(file_path, 'rb') as f:
+        expected = f.read()
+    return expected
+
 
 def test_parameter_tree():
     pt = ffptutils.ParameterTree()

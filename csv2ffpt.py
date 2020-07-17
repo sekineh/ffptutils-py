@@ -5,8 +5,9 @@ import ffptutils
 
 
 def main():
-    with open(sys.argv[1], 'r', newline='', encoding='utf-8-sig') as csv_file, open(sys.argv[2], 'wb') as ffpt_file:
-        ffptutils.csv2ffpt(csv_file, ffpt_file)
+    csv_path = sys.argv[1]
+    ffpt_path = sys.argv[2]
+    ffptutils.csv2ffpt(csv_path, ffpt_path)
 
 
 if __name__ == '__main__':
