@@ -1,7 +1,8 @@
 import io
+import os
 
 from lxml import etree
-from typing import BinaryIO, TextIO, Optional
+from typing import BinaryIO, TextIO, Optional, Union
 import csv
 
 TEMPLATE = """<?xml version="1.0"?>
@@ -52,26 +53,32 @@ class ParameterTree:
                          value_text, datatype, description, 3)
 
 
-def load(ffpt_file: BinaryIO) -> ParameterTree:
-    """Load ParameterTree from .ffpt file"""
+def load(ffpt_file: Union[BinaryIO, str]) -> ParameterTree:
+    """Load ParameterTree from .ffpt file or path"""
+    if type(ffpt_file) == str:
+        ffpt_file = open(ffpt_file, 'rb')
     pt = ParameterTree(etree.parse(ffpt_file))
+    ffpt_file.close()
     return pt
 
 
-def load_csv(csv_file: TextIO) -> ParameterTree:
-    """Load ParameterTree from .csv file"""
+def load_csv(csv_file: Union[TextIO, str]) -> ParameterTree:
+    """Load ParameterTree from .csv file or path"""
+    if type(csv_file) == str:
+        csv_file = open(csv_file, 'r', newline=os.linesep, encoding='utf-8-sig')
     pt = ParameterTree()
     for [name, datatype, value_text, description] in _read_csv(csv_file):
         pt.set_param(name, datatype, value_text, description)
+    csv_file.close()
     return pt
 
 
-def ffpt2csv(ffpt_file: BinaryIO, csv_file: TextIO):
+def ffpt2csv(ffpt_file: Union[BinaryIO, str], csv_file: TextIO):
     pt = load(ffpt_file)
     pt.save_csv(csv_file)
 
 
-def csv2ffpt(csv_file: TextIO, ffpt_file: BinaryIO):
+def csv2ffpt(csv_file: Union[TextIO, str], ffpt_file: BinaryIO):
     pt = load_csv(csv_file)
     pt.save(ffpt_file)
 
