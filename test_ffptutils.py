@@ -75,15 +75,25 @@ def test_parameter_tree():
 
 
 def test_parameter_tree_load():
-    pt = ffptutils.load("test/1.ffpt")
+    pt = ffptutils.load("test/2.ffpt")
     assert type(pt) == ffptutils.ParameterTree
-    # TODO: check contents
+    pt_2_check(pt)
 
 
 def test_parameter_tree_load_csv():
-    pt = ffptutils.load_csv("test/1.csv")
+    pt = ffptutils.load_csv("test/2.csv")
     assert type(pt) == ffptutils.ParameterTree
-    # TODO: check contents
+    pt_2_check(pt)
+
+
+def pt_2_check(pt):
+    assert pt['param1'] == 'some value'
+    assert pt['param2'] == True
+    assert pt['param3'] == False
+    assert pt['param5'] == 24
+    assert pt['param6'] == 1.0
+    assert pt['param7/param1'] == 'hoge'
+    assert pt['param7/param2/param1'] == 'fuga'
 
 
 def test_parameter_tree_set_param():
@@ -136,7 +146,6 @@ def test_parameter_tree_set_param():
     with pytest.raises(KeyError):
         _ = pt['a/b']
 
-    out = io.BytesIO()
     pt.save(TMPOUTPATH)
     assert read_binary_file("test/3.ffpt") == read_binary_file(TMPOUTPATH)
     os.remove(TMPOUTPATH)
