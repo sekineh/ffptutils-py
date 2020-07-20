@@ -5,20 +5,20 @@ error_exit() {
 
 OUTFILE=tmpfilename
 
-python ffpt2csv.py test/1.ffpt $OUTFILE || error_exit
-diff -u --ignore-space-change test/1.csv $OUTFILE || error_exit
+python ffpt2csv.py tests/data/1.ffpt $OUTFILE || error_exit
+diff -u --ignore-space-change tests/data/1.csv $OUTFILE || error_exit
 rm $OUTFILE
 
-python csv2ffpt.py test/1.csv $OUTFILE || error_exit
-diff -u --ignore-space-change test/1.ffpt $OUTFILE || error_exit
+python csv2ffpt.py tests/data/1.csv $OUTFILE || error_exit
+diff -u --ignore-space-change tests/data/1.ffpt $OUTFILE || error_exit
 rm $OUTFILE
 
-python ffpt2csv.py test/2.ffpt $OUTFILE || error_exit
-diff -u --ignore-space-change test/2.csv $OUTFILE || error_exit
+python ffpt2csv.py tests/data/2.ffpt $OUTFILE || error_exit
+diff -u --ignore-space-change tests/data/2.csv $OUTFILE || error_exit
 rm $OUTFILE
 
-python csv2ffpt.py test/2.csv $OUTFILE || error_exit
-diff -u --ignore-space-change test/2.ffpt $OUTFILE || error_exit
+python csv2ffpt.py tests/data/2.csv $OUTFILE || error_exit
+diff -u --ignore-space-change tests/data/2.ffpt $OUTFILE || error_exit
 rm $OUTFILE
 
 
