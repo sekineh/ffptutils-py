@@ -90,6 +90,7 @@ def pt_2_check(pt):
     assert pt['param1'] == 'some value'
     assert pt['param2'] == True
     assert pt['param3'] == False
+    assert pt['param4'] == None
     assert pt['param5'] == 24
     assert pt['param6'] == 1.0
     assert pt['param7/param1'] == 'hoge'

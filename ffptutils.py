@@ -81,7 +81,13 @@ class ParameterTree:
             elif datatype == "INTEGER":
                 return int(text)
             elif datatype == "BOOLEAN":
-                return text.lower() != 'false'
+                lower = text.lower()
+                if lower == "true":
+                    return True
+                elif lower == "false":
+                    return False
+                else:
+                    return None  # unset
             else:
                 return text
         else:
