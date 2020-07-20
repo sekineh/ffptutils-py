@@ -4,19 +4,22 @@ a python library that reads/writes Spirent iTest Parameter (.ffpt) files
 ## Features
 
 - Convert .ffpt file <-> .csv file.
-- Supports utf-8 with BOM encoding for .csv files (Suitable for Windows Excel)
+  - Supported CSV encoding is utf-8 with BOM (Suitable for Windows Excel).
+  - Supported Parameter Types are: TEXT, BOOLEAN, INTEGER and DOUBLE.
+- Load .ffpt file from your python script.
 
 ## Usage 1) Convert .ffpt <-> .csv
 
-1) Convert ffpt to csv. 
+1) Convert a ffpt file to csv format. 
 
 ```
 > python ffpt2csv.py file1_orig.ffpt edit.csv
 ```
 
 2) Edit the csv file using Excel or other software.
+![csvedit](csvedit.png)
 
-3) Convert the csv back to ffpt.
+3) Convert the csv file back to ffpt format.
 ```
 > python csv2ffpt.py edit.csv file1.ffpt
 ```
@@ -35,6 +38,13 @@ assert pt['param6'] == 1.0
 assert pt['param7/param1'] == 'hoge'
 assert pt['param7/param2/param1'] == 'fuga'
 ```
+
+As you can see, it recognizes the Parameter types and converts into the appropriate python types as below:
+
+- TEXT -> str
+- DOUBLE -> float
+- INTEGER -> int
+- BOOLEAN -> bool
 
 ## TODO: Planned features
 
