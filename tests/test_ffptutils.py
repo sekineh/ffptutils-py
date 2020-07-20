@@ -3,15 +3,15 @@ import os
 import pytest
 import ffptutils
 
-TMPOUTPATH = 'test/tmpoutpath'
+TMPOUTPATH = 'tests/data/tmpoutpath'
 
 
 def test_ffpt2csv():
-    assert_ffpt2csv("test/1.ffpt", "test/1.csv")
-    assert_ffpt2csv("test/2.ffpt", "test/2.csv")
+    assert_ffpt2csv("tests/data/1.ffpt", "tests/data/1.csv")
+    assert_ffpt2csv("tests/data/2.ffpt", "tests/data/2.csv")
 
-    assert_csv2ffpt("test/1.csv", "test/1.ffpt")
-    assert_csv2ffpt("test/2.csv", "test/2.ffpt")
+    assert_csv2ffpt("tests/data/1.csv", "tests/data/1.ffpt")
+    assert_csv2ffpt("tests/data/2.csv", "tests/data/2.ffpt")
 
 
 def assert_ffpt2csv(ffpt_fname: str, csv_fname: str):
@@ -75,13 +75,13 @@ def test_parameter_tree():
 
 
 def test_parameter_tree_load():
-    pt = ffptutils.load("test/2.ffpt")
+    pt = ffptutils.load("tests/data/2.ffpt")
     assert type(pt) == ffptutils.ParameterTree
     pt_2_check(pt)
 
 
 def test_parameter_tree_load_csv():
-    pt = ffptutils.load_csv("test/2.csv")
+    pt = ffptutils.load_csv("tests/data/2.csv")
     assert type(pt) == ffptutils.ParameterTree
     pt_2_check(pt)
 
@@ -148,5 +148,5 @@ def test_parameter_tree_set_param():
         _ = pt['a/b']
 
     pt.save(TMPOUTPATH)
-    assert read_binary_file("test/3.ffpt") == read_binary_file(TMPOUTPATH)
+    assert read_binary_file("tests/data/3.ffpt") == read_binary_file(TMPOUTPATH)
     os.remove(TMPOUTPATH)
