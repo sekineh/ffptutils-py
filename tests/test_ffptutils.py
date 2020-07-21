@@ -148,5 +148,6 @@ def test_parameter_tree_set_param():
         _ = pt['a/b']
 
     pt.save(TMPOUTPATH)
-    assert read_binary_file("tests/data/3.ffpt") == read_binary_file(TMPOUTPATH)
+    expected = read_binary_file( "tests/data/3.ffpt").replace(b'\r\n', b'\n')
+    assert expected == read_binary_file(TMPOUTPATH)
     os.remove(TMPOUTPATH)
