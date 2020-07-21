@@ -1,5 +1,8 @@
 # ffptutils-py
-a python library that reads/writes Spirent iTest Parameter (.ffpt) files
+
+A python library that reads/writes Spirent iTest Parameter (.ffpt) files.
+
+Tested with Python 3.6, 3.7, and 3.8 on Windows and Ubuntu platforms.
 
 ## Features
 
@@ -8,12 +11,18 @@ a python library that reads/writes Spirent iTest Parameter (.ffpt) files
   - Supported Parameter Types are: TEXT, BOOLEAN, INTEGER and DOUBLE.
 - Load .ffpt file from your python script.
 
+## Install
+
+```
+pip install ffptutils
+```
+
 ## Usage 1) Convert .ffpt <-> .csv
 
 1) Convert a ffpt file to csv format. 
 
 ```
-> python ffpt2csv.py file1_orig.ffpt edit.csv
+> ffpt2csv file1_orig.ffpt edit.csv
 ```
 
 2) Edit the csv file using Excel or other software.
@@ -21,7 +30,7 @@ a python library that reads/writes Spirent iTest Parameter (.ffpt) files
 
 3) Convert the csv file back to ffpt format.
 ```
-> python csv2ffpt.py edit.csv file1.ffpt
+> csv2ffpt edit.csv file1.ffpt
 ```
 
 ## Usage 2) General purpose .ffpt file loader
