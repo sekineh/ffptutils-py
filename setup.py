@@ -10,7 +10,7 @@ def _requires_from_file(filename):
 
 setuptools.setup(
     name='ffptutils',
-    version='0.0.1',
+    version='0.1.0',
     author='Hideki Sekine',
     author_email='sekineh@me.com',
     description='a python library that reads and writes Spirent iTest ParameterTree (.ffpt) files',
