@@ -34,4 +34,5 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+        python setup.py develop  # install package to site-local
         bash -x test.sh
