@@ -56,6 +56,6 @@ As you can see, it recognizes the Parameter types and converts into the appropri
 - INTEGER -> int
 - BOOLEAN -> bool
 
-## TODO: Planned features
+## PIP Package
 
-- pip packaging
+- https://pypi.org/project/ffptutils/
